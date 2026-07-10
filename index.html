@@ -42,7 +42,7 @@
   .preview .rdy{display:block;color:var(--ok);font-size:13px;margin-top:6px;font-weight:600}
   .btn.sub{background:#eef2f9;color:var(--brand-d)}
   .crop{margin-top:12px}
-  .cropvp{position:relative;width:100%;max-width:360px;margin:0 auto;background:#000;
+  .cropvp{position:relative;width:100%;max-width:300px;margin:0 auto;background:#000;
     border-radius:10px;overflow:hidden;touch-action:none;user-select:none}
   .cropvp canvas{display:block;width:100%;height:100%}
   .guide{position:absolute;inset:0;pointer-events:none}
@@ -59,6 +59,9 @@
   .done h2{margin:0 0 10px;font-size:18px;color:var(--ok)}
   .done .idbox{display:inline-block;background:#f0f6ff;border:1px solid #cfe0ff;color:#155ac4;
     font-weight:700;border-radius:8px;padding:6px 14px;margin-top:8px;font-size:15px}
+  .done #d_body{font-size:15px;line-height:1.7}
+  .ssnote{margin-top:16px;background:#fff7e6;border:1px solid #ffe0a3;color:#8a5a00;
+    border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6}
   .hide{display:none}
   .spin{display:inline-block;width:15px;height:15px;border:2px solid #cfd6e2;
     border-top-color:var(--brand);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:6px}
@@ -111,11 +114,11 @@
     <div class="crop hide" id="cropStage">
       <div class="cropvp" id="cropvp">
         <canvas id="cropCanvas"></canvas>
-        <svg class="guide" viewBox="0 0 400 300" preserveAspectRatio="none">
-          <rect x="2" y="2" width="396" height="296" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
-          <line x1="200" y1="0" x2="200" y2="300" stroke="rgba(255,255,255,.25)" stroke-width="1" stroke-dasharray="5 6"/>
-          <ellipse cx="200" cy="120" rx="72" ry="92" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-dasharray="7 6"/>
-          <path d="M120 300 C120 245 160 220 200 220 C240 220 280 245 280 300" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-dasharray="7 6"/>
+        <svg class="guide" viewBox="0 0 300 400" preserveAspectRatio="none">
+          <rect x="2" y="2" width="296" height="396" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+          <line x1="150" y1="0" x2="150" y2="400" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="5 6"/>
+          <ellipse cx="150" cy="150" rx="70" ry="95" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-dasharray="7 6"/>
+          <path d="M70 400 C70 320 105 290 150 290 C195 290 230 320 230 400" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-dasharray="7 6"/>
         </svg>
       </div>
       <div class="zoomrow">🔍<input type="range" id="zoom" min="1" max="3" step="0.01" value="1"></div>
@@ -142,6 +145,7 @@
       <h2 id="d_title">申し込みを受け付けました</h2>
       <div id="d_body"></div>
       <div class="idbox" id="d_id"></div>
+      <div class="ssnote" id="d_note"></div>
     </div>
   </div>
 
@@ -149,7 +153,7 @@
 
 <script>
 /* ===== 設定：GAS ウェブアプリの /exec URL をここに貼る ===== */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx0L7Uy7SLvhD3Ch9IWI9fWMpF4eZtMTpoaKbB-8aYYxbaxxRb1SLudCeUeDwy3w-Z2/exec";
+const GAS_URL = "PASTE_YOUR_GAS_WEBAPP_EXEC_URL_HERE";
 
 /* ===== 多言語辞書 ===== */
 const I18N = {
@@ -160,7 +164,7 @@ const I18N = {
     l_notes:"連絡事項・特記事項（任意）",btn_submit:"この内容で申し込む",
     d_title:"申し込みを受け付けました",d_body:'「{name}」さんの申し込みを受け付けました。（受験レベル：{level} ／ {method}）',
     no_match:"該当する方が見つかりませんでした。生年月日をもう一度ご確認ください。",
-    err:"通信エラーが発生しました。もう一度お試しください。",
+    err:"通信エラーが発生しました。もう一度お試しください。",ss_note:"この画面をスクリーンショットで保存してください",
     need:"受験レベル・申し込み方法・顔写真をすべて選択してください。",searching:"検索中…",sending:"送信中…"},
   vi:{app_title:"Xác nhận nguyện vọng dự thi tiếng Nhật",l_step1:"Vui lòng nhập ngày sinh của bạn",btn_search:"Hiển thị tên",
     l_step2:"Vui lòng chọn tên của bạn",l_level:"Cấp độ dự thi",l_method:"Cách đăng ký",
@@ -169,7 +173,7 @@ const I18N = {
     l_notes:"Ghi chú / lưu ý (không bắt buộc)",btn_submit:"Đăng ký với nội dung này",
     d_title:"Đã tiếp nhận đăng ký",d_body:'Đã tiếp nhận đăng ký của "{name}". (Cấp độ: {level} / {method})',
     no_match:"Không tìm thấy người phù hợp. Vui lòng kiểm tra lại ngày sinh.",
-    err:"Đã xảy ra lỗi kết nối. Vui lòng thử lại.",
+    err:"Đã xảy ra lỗi kết nối. Vui lòng thử lại.",ss_note:"Vui lòng lưu màn hình này bằng ảnh chụp màn hình",
     need:"Vui lòng chọn cấp độ, cách đăng ký và ảnh chân dung.",searching:"Đang tìm…",sending:"Đang gửi…"},
   id:{app_title:"Konfirmasi Keikutsertaan Ujian Bahasa Jepang",l_step1:"Silakan masukkan tanggal lahir Anda",btn_search:"Tampilkan nama",
     l_step2:"Silakan pilih nama Anda",l_level:"Tingkat ujian",l_method:"Cara pendaftaran",
@@ -178,7 +182,7 @@ const I18N = {
     l_notes:"Catatan / keterangan (opsional)",btn_submit:"Daftar dengan rincian ini",
     d_title:"Pendaftaran diterima",d_body:'Pendaftaran "{name}" telah diterima. (Tingkat: {level} / {method})',
     no_match:"Tidak ada yang cocok. Silakan periksa kembali tanggal lahir.",
-    err:"Terjadi kesalahan koneksi. Silakan coba lagi.",
+    err:"Terjadi kesalahan koneksi. Silakan coba lagi.",ss_note:"Silakan simpan layar ini dengan tangkapan layar",
     need:"Silakan pilih tingkat, cara pendaftaran, dan foto wajah.",searching:"Mencari…",sending:"Mengirim…"},
   my:{app_title:"ဂျပန်စာ စာမေးပွဲ ဖြေဆိုရန် ဆန္ဒအတည်ပြုခြင်း",l_step1:"သင့်မွေးသက္ကရာဇ်ကို ထည့်ပါ",btn_search:"အမည်ပြရန်",
     l_step2:"သင့်အမည်ကို ရွေးပါ",l_level:"ဖြေဆိုမည့် အဆင့်",l_method:"စာရင်းသွင်းနည်း",
@@ -187,7 +191,7 @@ const I18N = {
     l_notes:"မှတ်ချက် (မဖြစ်မနေ မဟုတ်)",btn_submit:"ဤအချက်များဖြင့် စာရင်းသွင်းမည်",
     d_title:"စာရင်းသွင်းခြင်း လက်ခံပြီးပါပြီ",d_body:'"{name}" ၏ စာရင်းသွင်းခြင်းကို လက်ခံပြီးပါပြီ။ (အဆင့်- {level} / {method})',
     no_match:"ကိုက်ညီသူ မတွေ့ပါ။ မွေးသက္ကရာဇ်ကို ပြန်စစ်ပါ။",
-    err:"ချိတ်ဆက်မှု အမှားဖြစ်ပွားခဲ့သည်။ ထပ်စမ်းကြည့်ပါ။",
+    err:"ချိတ်ဆက်မှု အမှားဖြစ်ပွားခဲ့သည်။ ထပ်စမ်းကြည့်ပါ။",ss_note:"ဤစခရင်ကို ဓာတ်ပုံ(screenshot) ရိုက်၍ သိမ်းဆည်းပါ",
     need:"အဆင့်၊ စာရင်းသွင်းနည်းနှင့် မျက်နှာဓာတ်ပုံ အားလုံးကို ရွေးပါ။",searching:"ရှာဖွေနေသည်…",sending:"ပို့နေသည်…"},
   tl:{app_title:"Kumpirmasyon ng Intensyong Kumuha ng Japanese Exam",l_step1:"Pakilagay ang iyong petsa ng kapanganakan",btn_search:"Ipakita ang pangalan",
     l_step2:"Piliin ang iyong pangalan",l_level:"Antas ng eksam",l_method:"Paraan ng pag-apply",
@@ -196,7 +200,7 @@ const I18N = {
     l_notes:"Mga tala / paalala (opsyonal)",btn_submit:"Mag-apply gamit ang mga detalyeng ito",
     d_title:"Natanggap ang aplikasyon",d_body:'Natanggap ang aplikasyon ni "{name}". (Antas: {level} / {method})',
     no_match:"Walang tumugmang tao. Pakisuri muli ang petsa ng kapanganakan.",
-    err:"May naganap na error sa koneksyon. Pakisubukang muli.",
+    err:"May naganap na error sa koneksyon. Pakisubukang muli.",ss_note:"Paki-screenshot at i-save ang screen na ito",
     need:"Pakipili ang antas, paraan ng pag-apply, at larawan ng mukha.",searching:"Naghahanap…",sending:"Ipinapadala…"},
   km:{app_title:"ការបញ្ជាក់បំណងប្រឡងភាសាជប៉ុន",l_step1:"សូមបញ្ចូលថ្ងៃខែឆ្នាំកំណើតរបស់អ្នក",btn_search:"បង្ហាញឈ្មោះ",
     l_step2:"សូមជ្រើសរើសឈ្មោះរបស់អ្នក",l_level:"កម្រិតប្រឡង",l_method:"វិធីចុះឈ្មោះ",
@@ -205,7 +209,7 @@ const I18N = {
     l_notes:"កំណត់សម្គាល់ (ស្រេចចិត្ត)",btn_submit:"ចុះឈ្មោះជាមួយព័ត៌មាននេះ",
     d_title:"បានទទួលការចុះឈ្មោះ",d_body:'បានទទួលការចុះឈ្មោះរបស់ "{name}"។ (កម្រិត៖ {level} / {method})',
     no_match:"រកមិនឃើញអ្នកដែលត្រូវគ្នាទេ។ សូមពិនិត្យថ្ងៃខែឆ្នាំកំណើតឡើងវិញ។",
-    err:"មានបញ្ហាការតភ្ជាប់។ សូមព្យាយាមម្តងទៀត។",
+    err:"មានបញ្ហាការតភ្ជាប់។ សូមព្យាយាមម្តងទៀត។",ss_note:"សូមថតអេក្រង់ (screenshot) ទុក",
     need:"សូមជ្រើសរើសកម្រិត វិធីចុះឈ្មោះ និងរូបថតមុខ។",searching:"កំពុងស្វែងរក…",sending:"កំពុងផ្ញើ…"},
   ne:{app_title:"जापानी भाषा परीक्षा — सहभागिता पुष्टि",l_step1:"कृपया आफ्नो जन्म मिति हाल्नुहोस्",btn_search:"नाम देखाउनुहोस्",
     l_step2:"कृपया आफ्नो नाम छान्नुहोस्",l_level:"परीक्षा तह",l_method:"आवेदन विधि",
@@ -214,7 +218,7 @@ const I18N = {
     l_notes:"टिप्पणी / सूचना (वैकल्पिक)",btn_submit:"यही विवरणका साथ आवेदन गर्नुहोस्",
     d_title:"आवेदन प्राप्त भयो",d_body:'"{name}" को आवेदन प्राप्त भयो। (तह: {level} / {method})',
     no_match:"मिल्ने व्यक्ति भेटिएन। कृपया जन्म मिति पुनः जाँच्नुहोस्।",
-    err:"जडान त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।",
+    err:"जडान त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।",ss_note:"कृपया यो स्क्रिन स्क्रिनसट लिएर सुरक्षित गर्नुहोस्",
     need:"कृपया तह, आवेदन विधि र अनुहारको फोटो सबै छान्नुहोस्।",searching:"खोज्दै…",sending:"पठाउँदै…"}
 };
 const LANGS=[["ja","日本語"],["vi","Tiếng Việt"],["id","Bahasa Indonesia"],["my","မြန်မာ"],["tl","Tagalog"],["km","ខ្មែរ"],["ne","नेपाली"]];
@@ -291,7 +295,7 @@ $("name").onchange=()=>{
 };
 
 /* 写真：選択→4:3トリミング（ガイド枠）→1200×900 JPEG */
-const OUT_W=1200, OUT_H=900;
+const OUT_W=900, OUT_H=1200;
 let cropImg=null, baseScale=1, cScale=1, offX=0, offY=0, vpW=0, vpH=0, cdrag=null;
 
 $("photobtn").onclick=()=>$("photo").click();
@@ -307,7 +311,7 @@ function openCrop(){
   $("preview").classList.add("hide");
   $("cropStage").classList.remove("hide");
   const vp=$("cropvp"), cvs=$("cropCanvas");
-  vpW=vp.clientWidth; vpH=Math.round(vpW*3/4);
+  vpW=vp.clientWidth; vpH=Math.round(vpW*4/3);
   vp.style.height=vpH+"px"; cvs.width=vpW; cvs.height=vpH;
   baseScale=Math.max(vpW/cropImg.width, vpH/cropImg.height);
   cScale=baseScale; $("zoom").value=1;
@@ -361,10 +365,15 @@ $("btn_submit").onclick=async()=>{
     await fetch(GAS_URL,{method:"POST",mode:"no-cors",
       headers:{"Content-Type":"text/plain;charset=utf-8"},
       body:JSON.stringify({action:"submit",id:selectedId,name:selectedName,dob,level,method,notes,lang:curLang,photo:photoData})});
-    const t=I18N[curLang];
-    const methodLabel=method==="group"?t.m_group:t.m_individual;
-    $("d_body").textContent=t.d_body.replace("{name}",selectedName).replace("{level}",level).replace("{method}",methodLabel);
-    $("d_id").textContent=(curLang==="ja"?"管理番号 ":"ID ")+selectedId;
+    const t=I18N[curLang], ja=I18N.ja, biL=(curLang!=="ja");
+    const esc=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    const ml=method==="group"?t.m_group:t.m_individual;
+    const mlJa=method==="group"?ja.m_group:ja.m_individual;
+    const fill=(tpl,m)=>tpl.replace("{name}",selectedName).replace("{level}",level).replace("{method}",m);
+    $("d_title").textContent = biL ? (ja.d_title+" / "+t.d_title) : ja.d_title;
+    $("d_body").innerHTML = esc(fill(ja.d_body,mlJa)) + (biL ? "<br>"+esc(fill(t.d_body,ml)) : "");
+    $("d_note").innerHTML = esc(ja.ss_note) + (biL ? "<br>"+esc(t.ss_note) : "");
+    $("d_id").textContent="管理番号 / ID "+selectedId;
     $("card1").classList.add("hide");$("card2").classList.add("hide");$("card3").classList.add("hide");
     $("cardDone").classList.remove("hide");
     window.scrollTo({top:0,behavior:"smooth"});

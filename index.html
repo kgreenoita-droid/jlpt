@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>日本語試験 受験意思確認</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --ink:#1f2430; --sub:#6b7280;
+    --line:#e3e6ec; --brand:#1f6feb; --brand-d:#155ac4; --ok:#0f9d58; --err:#d93025;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans JP","Noto Sans Myanmar","Noto Sans Khmer","Noto Sans Devanagari",sans-serif;
+    -webkit-text-size-adjust:100%;line-height:1.6}
+  .wrap{max-width:520px;margin:0 auto;padding:16px 14px 60px}
+  .langbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .langbar button{border:1px solid var(--line);background:#fff;color:var(--sub);
+    padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer}
+  .langbar button.active{background:var(--brand);border-color:var(--brand);color:#fff}
+  h1{font-size:19px;margin:2px 0 16px;font-weight:700}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:16px 15px;margin-bottom:14px}
+  .card.dim{opacity:.45;pointer-events:none}
+  .step{font-size:12px;color:var(--brand);font-weight:700;letter-spacing:.04em;margin-bottom:6px}
+  label.lbl{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+  input[type=date],select,textarea{width:100%;padding:12px;font-size:16px;
+    border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  textarea{min-height:76px;resize:vertical}
+  .btn{width:100%;padding:13px;font-size:16px;font-weight:700;border:none;border-radius:10px;
+    background:var(--brand);color:#fff;cursor:pointer;margin-top:12px}
+  .btn:active{background:var(--brand-d)}
+  .radios{display:flex;flex-direction:column;gap:8px}
+  .radios label{display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+    border-radius:10px;padding:11px 12px;font-size:15px;cursor:pointer}
+  .radios input{width:20px;height:20px;accent-color:var(--brand)}
+  .photobtn{display:flex;align-items:center;justify-content:center;gap:8px;
+    border:1px dashed var(--brand);color:var(--brand-d);background:#f2f7ff;
+    border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer}
+  .preview{margin-top:10px;text-align:center}
+  .preview img{max-width:150px;max-height:190px;border-radius:10px;border:1px solid var(--line)}
+  .preview .rdy{display:block;color:var(--ok);font-size:13px;margin-top:6px;font-weight:600}
+  .btn.sub{background:#eef2f9;color:var(--brand-d)}
+  .crop{margin-top:12px}
+  .cropvp{position:relative;width:100%;max-width:360px;margin:0 auto;background:#000;
+    border-radius:10px;overflow:hidden;touch-action:none;user-select:none}
+  .cropvp canvas{display:block;width:100%;height:100%}
+  .guide{position:absolute;inset:0;pointer-events:none}
+  .zoomrow{display:flex;align-items:center;gap:10px;max-width:360px;margin:10px auto 0;font-size:16px}
+  .zoomrow input{flex:1}
+  .croplbl{text-align:center;font-size:13px;color:var(--sub);margin-top:8px}
+  .cropbtns{display:flex;gap:8px;max-width:360px;margin:10px auto 0}
+  .cropbtns .btn{margin-top:0;flex:1}
+  .msg{font-size:13px;margin-top:8px;min-height:18px}
+  .msg.err{color:var(--err)}
+  .done{text-align:center;padding:26px 14px}
+  .done .check{width:56px;height:56px;border-radius:50%;background:var(--ok);color:#fff;
+    font-size:30px;line-height:56px;margin:0 auto 12px}
+  .done h2{margin:0 0 10px;font-size:18px;color:var(--ok)}
+  .done .idbox{display:inline-block;background:#f0f6ff;border:1px solid #cfe0ff;color:#155ac4;
+    font-weight:700;border-radius:8px;padding:6px 14px;margin-top:8px;font-size:15px}
+  .hide{display:none}
+  .spin{display:inline-block;width:15px;height:15px;border:2px solid #cfd6e2;
+    border-top-color:var(--brand);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="langbar" id="langbar"></div>
+  <h1 id="app_title">日本語試験 受験意思確認</h1>
+
+  <!-- STEP 1: birthday -->
+  <div class="card" id="card1">
+    <div class="step">STEP 1</div>
+    <label class="lbl" id="l_step1" for="dob">生年月日を入力してください</label>
+    <input type="date" id="dob">
+    <button class="btn" id="btn_search">名前を表示する</button>
+    <div class="msg" id="msg1"></div>
+  </div>
+
+  <!-- STEP 2: name -->
+  <div class="card dim" id="card2">
+    <div class="step">STEP 2</div>
+    <label class="lbl" id="l_step2" for="name">お名前を選んでください</label>
+    <select id="name"><option value=""></option></select>
+  </div>
+
+  <!-- STEP 3: exam details + photo -->
+  <div class="card dim" id="card3">
+    <div class="step">STEP 3</div>
+    <label class="lbl" id="l_level">受験レベル</label>
+    <select id="level">
+      <option value="">—</option>
+      <option value="N5">N5</option>
+      <option value="N4">N4</option>
+      <option value="N3">N3</option>
+    </select>
+
+    <label class="lbl" id="l_method" style="margin-top:16px">申し込み方法</label>
+    <div class="radios" id="methodbox">
+      <label><input type="radio" name="method" value="group"><span id="m_group">未来クリエイト協同組合（みらいくりえいと/Mirai Create）に団体申込を依頼する</span></label>
+      <label><input type="radio" name="method" value="individual"><span id="m_individual">個人で申し込む</span></label>
+    </div>
+
+    <label class="lbl" id="l_photo" style="margin-top:16px">顔写真（本人確認用）※必須</label>
+    <div class="photobtn" id="photobtn">📷 <span id="photo_pick">写真を選ぶ・撮影する</span></div>
+    <input type="file" id="photo" accept="image/*" style="display:none">
+
+    <div class="crop hide" id="cropStage">
+      <div class="cropvp" id="cropvp">
+        <canvas id="cropCanvas"></canvas>
+        <svg class="guide" viewBox="0 0 400 300" preserveAspectRatio="none">
+          <rect x="2" y="2" width="396" height="296" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+          <line x1="200" y1="0" x2="200" y2="300" stroke="rgba(255,255,255,.25)" stroke-width="1" stroke-dasharray="5 6"/>
+          <ellipse cx="200" cy="120" rx="72" ry="92" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-dasharray="7 6"/>
+          <path d="M120 300 C120 245 160 220 200 220 C240 220 280 245 280 300" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-dasharray="7 6"/>
+        </svg>
+      </div>
+      <div class="zoomrow">🔍<input type="range" id="zoom" min="1" max="3" step="0.01" value="1"></div>
+      <div class="croplbl" id="photo_guide">顔と肩を枠のガイドに合わせてください</div>
+      <div class="cropbtns">
+        <button class="btn sub" id="cropRetake"><span id="photo_retake">選び直す</span></button>
+        <button class="btn" id="cropConfirm"><span id="photo_confirm">この写真で決定</span></button>
+      </div>
+    </div>
+
+    <div class="preview hide" id="preview"><img id="prevImg" alt=""><span class="rdy" id="photo_ready">写真を選択しました</span></div>
+
+    <label class="lbl" id="l_notes" style="margin-top:16px">連絡事項・特記事項（任意）</label>
+    <textarea id="notes"></textarea>
+
+    <button class="btn" id="btn_submit">この内容で申し込む</button>
+    <div class="msg" id="msg3"></div>
+  </div>
+
+  <!-- DONE -->
+  <div class="card hide" id="cardDone">
+    <div class="done">
+      <div class="check">✓</div>
+      <h2 id="d_title">申し込みを受け付けました</h2>
+      <div id="d_body"></div>
+      <div class="idbox" id="d_id"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ===== 設定：GAS ウェブアプリの /exec URL をここに貼る ===== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx0L7Uy7SLvhD3Ch9IWI9fWMpF4eZtMTpoaKbB-8aYYxbaxxRb1SLudCeUeDwy3w-Z2/exec";
+
+/* ===== 多言語辞書 ===== */
+const I18N = {
+  ja:{app_title:"日本語試験 受験意思確認",l_step1:"生年月日を入力してください",btn_search:"名前を表示する",
+    l_step2:"お名前を選んでください",l_level:"受験レベル",l_method:"申し込み方法",
+    m_group:"未来クリエイト協同組合（みらいくりえいと/Mirai Create）に団体申込を依頼する",m_individual:"個人で申し込む",
+    l_photo:"顔写真（本人確認用）※必須",photo_pick:"写真を選ぶ・撮影する",photo_ready:"写真を選択しました",photo_guide:"顔と肩を枠のガイドに合わせてください",photo_confirm:"この写真で決定",photo_retake:"選び直す",
+    l_notes:"連絡事項・特記事項（任意）",btn_submit:"この内容で申し込む",
+    d_title:"申し込みを受け付けました",d_body:'「{name}」さんの申し込みを受け付けました。（受験レベル：{level} ／ {method}）',
+    no_match:"該当する方が見つかりませんでした。生年月日をもう一度ご確認ください。",
+    err:"通信エラーが発生しました。もう一度お試しください。",
+    need:"受験レベル・申し込み方法・顔写真をすべて選択してください。",searching:"検索中…",sending:"送信中…"},
+  vi:{app_title:"Xác nhận nguyện vọng dự thi tiếng Nhật",l_step1:"Vui lòng nhập ngày sinh của bạn",btn_search:"Hiển thị tên",
+    l_step2:"Vui lòng chọn tên của bạn",l_level:"Cấp độ dự thi",l_method:"Cách đăng ký",
+    m_group:"Nhờ 未来クリエイト協同組合（みらいくりえいと/Mirai Create） đăng ký theo đoàn thể",m_individual:"Tự đăng ký cá nhân",
+    l_photo:"Ảnh chân dung (xác minh danh tính) * bắt buộc",photo_pick:"Chọn / chụp ảnh",photo_ready:"Đã chọn ảnh",photo_guide:"Căn khuôn mặt và vai theo khung hướng dẫn",photo_confirm:"Dùng ảnh này",photo_retake:"Chọn lại",
+    l_notes:"Ghi chú / lưu ý (không bắt buộc)",btn_submit:"Đăng ký với nội dung này",
+    d_title:"Đã tiếp nhận đăng ký",d_body:'Đã tiếp nhận đăng ký của "{name}". (Cấp độ: {level} / {method})',
+    no_match:"Không tìm thấy người phù hợp. Vui lòng kiểm tra lại ngày sinh.",
+    err:"Đã xảy ra lỗi kết nối. Vui lòng thử lại.",
+    need:"Vui lòng chọn cấp độ, cách đăng ký và ảnh chân dung.",searching:"Đang tìm…",sending:"Đang gửi…"},
+  id:{app_title:"Konfirmasi Keikutsertaan Ujian Bahasa Jepang",l_step1:"Silakan masukkan tanggal lahir Anda",btn_search:"Tampilkan nama",
+    l_step2:"Silakan pilih nama Anda",l_level:"Tingkat ujian",l_method:"Cara pendaftaran",
+    m_group:"Meminta 未来クリエイト協同組合（みらいくりえいと/Mirai Create） mendaftarkan secara kelompok",m_individual:"Mendaftar secara pribadi",
+    l_photo:"Foto wajah (verifikasi identitas) * wajib",photo_pick:"Pilih / ambil foto",photo_ready:"Foto telah dipilih",photo_guide:"Sesuaikan wajah dan bahu dengan panduan bingkai",photo_confirm:"Gunakan foto ini",photo_retake:"Pilih ulang",
+    l_notes:"Catatan / keterangan (opsional)",btn_submit:"Daftar dengan rincian ini",
+    d_title:"Pendaftaran diterima",d_body:'Pendaftaran "{name}" telah diterima. (Tingkat: {level} / {method})',
+    no_match:"Tidak ada yang cocok. Silakan periksa kembali tanggal lahir.",
+    err:"Terjadi kesalahan koneksi. Silakan coba lagi.",
+    need:"Silakan pilih tingkat, cara pendaftaran, dan foto wajah.",searching:"Mencari…",sending:"Mengirim…"},
+  my:{app_title:"ဂျပန်စာ စာမေးပွဲ ဖြေဆိုရန် ဆန္ဒအတည်ပြုခြင်း",l_step1:"သင့်မွေးသက္ကရာဇ်ကို ထည့်ပါ",btn_search:"အမည်ပြရန်",
+    l_step2:"သင့်အမည်ကို ရွေးပါ",l_level:"ဖြေဆိုမည့် အဆင့်",l_method:"စာရင်းသွင်းနည်း",
+    m_group:"未来クリエイト協同組合（みらいくりえいと/Mirai Create） သို့ အဖွဲ့လိုက် စာရင်းသွင်းရန် အပ်နှံမည်",m_individual:"ကိုယ်တိုင် စာရင်းသွင်းမည်",
+    l_photo:"မျက်နှာဓာတ်ပုံ (ကိုယ်ရေးအတည်ပြု) * မဖြစ်မနေ",photo_pick:"ဓာတ်ပုံ ရွေး / ရိုက်ရန်",photo_ready:"ဓာတ်ပုံ ရွေးပြီးပါပြီ",photo_guide:"မျက်နှာနှင့် ပခုံးကို ဘောင်လမ်းညွှန်နှင့် ကိုက်ညီအောင် ချိန်ပါ",photo_confirm:"ဤဓာတ်ပုံကို အသုံးပြုမည်",photo_retake:"ပြန်ရွေးမည်",
+    l_notes:"မှတ်ချက် (မဖြစ်မနေ မဟုတ်)",btn_submit:"ဤအချက်များဖြင့် စာရင်းသွင်းမည်",
+    d_title:"စာရင်းသွင်းခြင်း လက်ခံပြီးပါပြီ",d_body:'"{name}" ၏ စာရင်းသွင်းခြင်းကို လက်ခံပြီးပါပြီ။ (အဆင့်- {level} / {method})',
+    no_match:"ကိုက်ညီသူ မတွေ့ပါ။ မွေးသက္ကရာဇ်ကို ပြန်စစ်ပါ။",
+    err:"ချိတ်ဆက်မှု အမှားဖြစ်ပွားခဲ့သည်။ ထပ်စမ်းကြည့်ပါ။",
+    need:"အဆင့်၊ စာရင်းသွင်းနည်းနှင့် မျက်နှာဓာတ်ပုံ အားလုံးကို ရွေးပါ။",searching:"ရှာဖွေနေသည်…",sending:"ပို့နေသည်…"},
+  tl:{app_title:"Kumpirmasyon ng Intensyong Kumuha ng Japanese Exam",l_step1:"Pakilagay ang iyong petsa ng kapanganakan",btn_search:"Ipakita ang pangalan",
+    l_step2:"Piliin ang iyong pangalan",l_level:"Antas ng eksam",l_method:"Paraan ng pag-apply",
+    m_group:"Ipaapply sa 未来クリエイト協同組合（みらいくりえいと/Mirai Create） bilang grupo",m_individual:"Mag-apply nang indibidwal",
+    l_photo:"Larawan ng mukha (pagpapatunay) * kailangan",photo_pick:"Pumili / kumuha ng larawan",photo_ready:"Napili na ang larawan",photo_guide:"Iayon ang mukha at balikat sa gabay ng frame",photo_confirm:"Gamitin ang larawang ito",photo_retake:"Pumili muli",
+    l_notes:"Mga tala / paalala (opsyonal)",btn_submit:"Mag-apply gamit ang mga detalyeng ito",
+    d_title:"Natanggap ang aplikasyon",d_body:'Natanggap ang aplikasyon ni "{name}". (Antas: {level} / {method})',
+    no_match:"Walang tumugmang tao. Pakisuri muli ang petsa ng kapanganakan.",
+    err:"May naganap na error sa koneksyon. Pakisubukang muli.",
+    need:"Pakipili ang antas, paraan ng pag-apply, at larawan ng mukha.",searching:"Naghahanap…",sending:"Ipinapadala…"},
+  km:{app_title:"ការបញ្ជាក់បំណងប្រឡងភាសាជប៉ុន",l_step1:"សូមបញ្ចូលថ្ងៃខែឆ្នាំកំណើតរបស់អ្នក",btn_search:"បង្ហាញឈ្មោះ",
+    l_step2:"សូមជ្រើសរើសឈ្មោះរបស់អ្នក",l_level:"កម្រិតប្រឡង",l_method:"វិធីចុះឈ្មោះ",
+    m_group:"ស្នើសុំឱ្យ 未来クリエイト協同組合（みらいくりえいと/Mirai Create） ចុះឈ្មោះជាក្រុម",m_individual:"ចុះឈ្មោះដោយខ្លួនឯង",
+    l_photo:"រូបថតមុខ (ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ) * ចាំបាច់",photo_pick:"ជ្រើស / ថតរូប",photo_ready:"បានជ្រើសរូបភាព",photo_guide:"តម្រឹមមុខ និងស្មា ឲ្យត្រូវនឹងស៊ុមណែនាំ",photo_confirm:"ប្រើរូបនេះ",photo_retake:"ជ្រើសរើសឡើងវិញ",
+    l_notes:"កំណត់សម្គាល់ (ស្រេចចិត្ត)",btn_submit:"ចុះឈ្មោះជាមួយព័ត៌មាននេះ",
+    d_title:"បានទទួលការចុះឈ្មោះ",d_body:'បានទទួលការចុះឈ្មោះរបស់ "{name}"។ (កម្រិត៖ {level} / {method})',
+    no_match:"រកមិនឃើញអ្នកដែលត្រូវគ្នាទេ។ សូមពិនិត្យថ្ងៃខែឆ្នាំកំណើតឡើងវិញ។",
+    err:"មានបញ្ហាការតភ្ជាប់។ សូមព្យាយាមម្តងទៀត។",
+    need:"សូមជ្រើសរើសកម្រិត វិធីចុះឈ្មោះ និងរូបថតមុខ។",searching:"កំពុងស្វែងរក…",sending:"កំពុងផ្ញើ…"},
+  ne:{app_title:"जापानी भाषा परीक्षा — सहभागिता पुष्टि",l_step1:"कृपया आफ्नो जन्म मिति हाल्नुहोस्",btn_search:"नाम देखाउनुहोस्",
+    l_step2:"कृपया आफ्नो नाम छान्नुहोस्",l_level:"परीक्षा तह",l_method:"आवेदन विधि",
+    m_group:"未来クリエイト協同組合（みらいくりえいと/Mirai Create） लाई सामूहिक आवेदन गर्न अनुरोध गर्नुहोस्",m_individual:"व्यक्तिगत रूपमा आवेदन गर्नुहोस्",
+    l_photo:"अनुहारको फोटो (पहिचान पुष्टि) * अनिवार्य",photo_pick:"फोटो छान्नुहोस् / खिच्नुहोस्",photo_ready:"फोटो छानियो",photo_guide:"अनुहार र काँधलाई फ्रेमको मार्गनिर्देशनमा मिलाउनुहोस्",photo_confirm:"यही फोटो प्रयोग गर्नुहोस्",photo_retake:"फेरि छान्नुहोस्",
+    l_notes:"टिप्पणी / सूचना (वैकल्पिक)",btn_submit:"यही विवरणका साथ आवेदन गर्नुहोस्",
+    d_title:"आवेदन प्राप्त भयो",d_body:'"{name}" को आवेदन प्राप्त भयो। (तह: {level} / {method})',
+    no_match:"मिल्ने व्यक्ति भेटिएन। कृपया जन्म मिति पुनः जाँच्नुहोस्।",
+    err:"जडान त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।",
+    need:"कृपया तह, आवेदन विधि र अनुहारको फोटो सबै छान्नुहोस्।",searching:"खोज्दै…",sending:"पठाउँदै…"}
+};
+const LANGS=[["ja","日本語"],["vi","Tiếng Việt"],["id","Bahasa Indonesia"],["my","မြန်မာ"],["tl","Tagalog"],["km","ខ្មែរ"],["ne","नेपाली"]];
+
+let curLang="ja", selectedId="", selectedName="", photoData="";
+const $=id=>document.getElementById(id);
+
+/* 言語バー */
+const bar=$("langbar");
+LANGS.forEach(([code,label])=>{
+  const b=document.createElement("button");
+  b.textContent=label; b.dataset.code=code;
+  b.onclick=()=>applyLang(code);
+  bar.appendChild(b);
+});
+function applyLang(code){
+  curLang=code; const t=I18N[code];
+  document.documentElement.lang=code;
+  ["app_title","l_step1","btn_search","l_step2","l_level","l_method",
+   "m_group","m_individual","l_photo","photo_pick","photo_ready",
+   "photo_guide","photo_confirm","photo_retake",
+   "l_notes","btn_submit","d_title"].forEach(k=>{ if($(k)) $(k).textContent=t[k]; });
+  [...bar.children].forEach(b=>b.classList.toggle("active",b.dataset.code===code));
+}
+applyLang("ja");
+
+/* JSONP（検索用・GET） */
+function jsonp(params){
+  return new Promise((resolve,reject)=>{
+    const cb="cb_"+Math.random().toString(36).slice(2);
+    const s=document.createElement("script");
+    const timer=setTimeout(()=>{cleanup();reject(new Error("timeout"));},15000);
+    function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;} s.remove(); clearTimeout(timer);}
+    window[cb]=d=>{cleanup();resolve(d);};
+    s.onerror=()=>{cleanup();reject(new Error("network"));};
+    const qs=new URLSearchParams(Object.assign({},params,{callback:cb})).toString();
+    s.src=GAS_URL+"?"+qs;
+    document.body.appendChild(s);
+  });
+}
+
+/* STEP1: 検索 */
+$("btn_search").onclick=async()=>{
+  const dob=$("dob").value;
+  const m1=$("msg1"); m1.className="msg"; m1.textContent="";
+  if(!dob){m1.className="msg err";m1.textContent="—";return;}
+  m1.innerHTML='<span class="spin"></span>'+I18N[curLang].searching;
+  try{
+    const r=await jsonp({action:"lookup",dob});
+    if(!r.ok) throw new Error("server");
+    const sel=$("name"); sel.innerHTML='<option value=""></option>';
+    if(!r.people||!r.people.length){
+      m1.className="msg err"; m1.textContent=I18N[curLang].no_match;
+      $("card2").classList.add("dim"); $("card3").classList.add("dim"); return;
+    }
+    r.people.forEach(p=>{
+      const o=document.createElement("option");
+      o.value=p.id; o.textContent=p.name; o.dataset.lang=p.lang||"ja";
+      sel.appendChild(o);
+    });
+    m1.textContent=""; $("card2").classList.remove("dim");
+  }catch(e){ m1.className="msg err"; m1.textContent=I18N[curLang].err; }
+};
+
+/* STEP2: 名前選択 → 言語自動切替 */
+$("name").onchange=()=>{
+  const opt=$("name").selectedOptions[0];
+  selectedId=$("name").value; selectedName=opt?opt.textContent:"";
+  if(selectedId){
+    const lang=opt.dataset.lang||"ja";
+    if(I18N[lang]) applyLang(lang);
+    $("card3").classList.remove("dim");
+  }else{ $("card3").classList.add("dim"); }
+};
+
+/* 写真：選択→4:3トリミング（ガイド枠）→1200×900 JPEG */
+const OUT_W=1200, OUT_H=900;
+let cropImg=null, baseScale=1, cScale=1, offX=0, offY=0, vpW=0, vpH=0, cdrag=null;
+
+$("photobtn").onclick=()=>$("photo").click();
+$("photo").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=ev=>{ const img=new Image(); img.onload=()=>{ cropImg=img; openCrop(); }; img.src=ev.target.result; };
+  rd.readAsDataURL(f);
+  e.target.value="";
+};
+
+function openCrop(){
+  $("preview").classList.add("hide");
+  $("cropStage").classList.remove("hide");
+  const vp=$("cropvp"), cvs=$("cropCanvas");
+  vpW=vp.clientWidth; vpH=Math.round(vpW*3/4);
+  vp.style.height=vpH+"px"; cvs.width=vpW; cvs.height=vpH;
+  baseScale=Math.max(vpW/cropImg.width, vpH/cropImg.height);
+  cScale=baseScale; $("zoom").value=1;
+  offX=(vpW-cropImg.width*cScale)/2; offY=(vpH-cropImg.height*cScale)/2;
+  drawCrop();
+}
+function clampOff(){
+  const w=cropImg.width*cScale, h=cropImg.height*cScale;
+  offX=Math.min(0, Math.max(vpW-w, offX));
+  offY=Math.min(0, Math.max(vpH-h, offY));
+}
+function drawCrop(){
+  const ctx=$("cropCanvas").getContext("2d");
+  clampOff();
+  ctx.fillStyle="#000"; ctx.fillRect(0,0,vpW,vpH);
+  ctx.drawImage(cropImg, offX, offY, cropImg.width*cScale, cropImg.height*cScale);
+}
+$("zoom").oninput=()=>{
+  const cx=vpW/2, cy=vpH/2, prev=cScale, ns=baseScale*parseFloat($("zoom").value);
+  offX=cx-(cx-offX)*(ns/prev); offY=cy-(cy-offY)*(ns/prev); cScale=ns; drawCrop();
+};
+(function(){
+  const vp=$("cropvp");
+  vp.addEventListener("pointerdown",e=>{ cdrag={x:e.clientX,y:e.clientY,ox:offX,oy:offY}; vp.setPointerCapture(e.pointerId); });
+  vp.addEventListener("pointermove",e=>{ if(!cdrag)return; offX=cdrag.ox+(e.clientX-cdrag.x); offY=cdrag.oy+(e.clientY-cdrag.y); drawCrop(); });
+  vp.addEventListener("pointerup",()=>cdrag=null);
+  vp.addEventListener("pointercancel",()=>cdrag=null);
+})();
+$("cropRetake").onclick=()=>{ $("cropStage").classList.add("hide"); $("photo").click(); };
+$("cropConfirm").onclick=()=>{
+  const sx=(0-offX)/cScale, sy=(0-offY)/cScale, sW=vpW/cScale, sH=vpH/cScale;
+  const oc=document.createElement("canvas"); oc.width=OUT_W; oc.height=OUT_H;
+  oc.getContext("2d").drawImage(cropImg, sx, sy, sW, sH, 0,0,OUT_W,OUT_H);
+  let q=0.92, url=oc.toDataURL("image/jpeg",q);
+  while(url.length>7000000 && q>0.4){ q-=0.08; url=oc.toDataURL("image/jpeg",q); }
+  photoData=url;
+  $("cropStage").classList.add("hide");
+  $("prevImg").src=url; $("preview").classList.remove("hide");
+};
+
+/* STEP3: 送信（POST・写真あり） */
+$("btn_submit").onclick=async()=>{
+  const m3=$("msg3"); m3.className="msg"; m3.textContent="";
+  const level=$("level").value;
+  const method=(document.querySelector('input[name=method]:checked')||{}).value;
+  const notes=$("notes").value.trim();
+  const dob=$("dob").value;
+  if(!selectedId||!level||!method||!photoData){ m3.className="msg err"; m3.textContent=I18N[curLang].need; return; }
+  m3.innerHTML='<span class="spin"></span>'+I18N[curLang].sending;
+  try{
+    await fetch(GAS_URL,{method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action:"submit",id:selectedId,name:selectedName,dob,level,method,notes,lang:curLang,photo:photoData})});
+    const t=I18N[curLang];
+    const methodLabel=method==="group"?t.m_group:t.m_individual;
+    $("d_body").textContent=t.d_body.replace("{name}",selectedName).replace("{level}",level).replace("{method}",methodLabel);
+    $("d_id").textContent=(curLang==="ja"?"管理番号 ":"ID ")+selectedId;
+    $("card1").classList.add("hide");$("card2").classList.add("hide");$("card3").classList.add("hide");
+    $("cardDone").classList.remove("hide");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(e){ m3.className="msg err"; m3.textContent=I18N[curLang].err; }
+};
+</script>
+</body>
+</html>

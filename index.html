@@ -128,14 +128,11 @@
       <div class="cropvp" id="cropvp">
         <canvas id="cropCanvas"></canvas>
         <svg class="guide" viewBox="0 0 300 400" preserveAspectRatio="none">
-          <rect x="2" y="2" width="296" height="396" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
-          <line x1="150" y1="0" x2="150" y2="400" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="5 6"/>
-          <ellipse cx="150" cy="150" rx="70" ry="95" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-dasharray="7 6"/>
-          <path d="M70 400 C70 320 105 290 150 290 C195 290 230 320 230 400" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-dasharray="7 6"/>
+          <ellipse cx="150" cy="150" rx="70" ry="95" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-dasharray="7 6"/>
         </svg>
       </div>
       <div class="zoomrow">🔍<input type="range" id="zoom" min="1" max="3" step="0.01" value="1"></div>
-      <div class="croplbl" id="photo_guide">顔と肩を枠のガイドに合わせてください</div>
+      <div class="croplbl" id="photo_guide">顔を枠の中に合わせてください</div>
       <div class="cropbtns">
         <button class="btn sub" id="cropRetake"><span id="photo_retake">選び直す</span></button>
         <button class="btn" id="cropConfirm"><span id="photo_confirm">この写真で決定</span></button>
@@ -174,7 +171,7 @@ const I18N = {
   ja:{app_title:"日本語試験 受験意思確認",l_step1:"生年月日を入力してください",btn_search:"名前を表示する",
     l_step2:"お名前を選んでください",l_level:"受験レベル",l_method:"申し込み方法",
     m_group:"未来クリエイト協同組合（みらいくりえいと/Mirai Create）に団体申込を依頼する",m_individual:"個人で申し込む",
-    l_photo:"顔写真（本人確認用）※必須",photo_pick:"写真を選ぶ・撮影する",photo_ready:"写真を選択しました",photo_guide:"顔と肩を枠のガイドに合わせてください",photo_confirm:"この写真で決定",photo_retake:"選び直す",
+    l_photo:"顔写真（本人確認用）※必須",photo_pick:"写真を選ぶ・撮影する",photo_ready:"写真を選択しました",photo_guide:"顔を枠の中に合わせてください",photo_confirm:"この写真で決定",photo_retake:"選び直す",
     l_notes:"連絡事項・特記事項（任意）",btn_submit:"この内容で申し込む",
     d_title:"申し込みを受け付けました",d_body:'「{name}」さんの申し込みを受け付けました。（受験レベル：{level} ／ {method}）',
     no_match:"該当する方が見つかりませんでした。生年月日をもう一度ご確認ください。",
@@ -183,7 +180,7 @@ const I18N = {
   vi:{app_title:"Xác nhận nguyện vọng dự thi tiếng Nhật",l_step1:"Vui lòng nhập ngày sinh của bạn",btn_search:"Hiển thị tên",
     l_step2:"Vui lòng chọn tên của bạn",l_level:"Cấp độ dự thi",l_method:"Cách đăng ký",
     m_group:"Nhờ 未来クリエイト協同組合（みらいくりえいと/Mirai Create） đăng ký theo đoàn thể",m_individual:"Tự đăng ký cá nhân",
-    l_photo:"Ảnh chân dung (xác minh danh tính) * bắt buộc",photo_pick:"Chọn / chụp ảnh",photo_ready:"Đã chọn ảnh",photo_guide:"Căn khuôn mặt và vai theo khung hướng dẫn",photo_confirm:"Dùng ảnh này",photo_retake:"Chọn lại",
+    l_photo:"Ảnh chân dung (xác minh danh tính) * bắt buộc",photo_pick:"Chọn / chụp ảnh",photo_ready:"Đã chọn ảnh",photo_guide:"Căn khuôn mặt vào khung hướng dẫn",photo_confirm:"Dùng ảnh này",photo_retake:"Chọn lại",
     l_notes:"Ghi chú / lưu ý (không bắt buộc)",btn_submit:"Đăng ký với nội dung này",
     d_title:"Đã tiếp nhận đăng ký",d_body:'Đã tiếp nhận đăng ký của "{name}". (Cấp độ: {level} / {method})',
     no_match:"Không tìm thấy người phù hợp. Vui lòng kiểm tra lại ngày sinh.",
@@ -192,7 +189,7 @@ const I18N = {
   id:{app_title:"Konfirmasi Keikutsertaan Ujian Bahasa Jepang",l_step1:"Silakan masukkan tanggal lahir Anda",btn_search:"Tampilkan nama",
     l_step2:"Silakan pilih nama Anda",l_level:"Tingkat ujian",l_method:"Cara pendaftaran",
     m_group:"Meminta 未来クリエイト協同組合（みらいくりえいと/Mirai Create） mendaftarkan secara kelompok",m_individual:"Mendaftar secara pribadi",
-    l_photo:"Foto wajah (verifikasi identitas) * wajib",photo_pick:"Pilih / ambil foto",photo_ready:"Foto telah dipilih",photo_guide:"Sesuaikan wajah dan bahu dengan panduan bingkai",photo_confirm:"Gunakan foto ini",photo_retake:"Pilih ulang",
+    l_photo:"Foto wajah (verifikasi identitas) * wajib",photo_pick:"Pilih / ambil foto",photo_ready:"Foto telah dipilih",photo_guide:"Sesuaikan wajah dengan panduan bingkai",photo_confirm:"Gunakan foto ini",photo_retake:"Pilih ulang",
     l_notes:"Catatan / keterangan (opsional)",btn_submit:"Daftar dengan rincian ini",
     d_title:"Pendaftaran diterima",d_body:'Pendaftaran "{name}" telah diterima. (Tingkat: {level} / {method})',
     no_match:"Tidak ada yang cocok. Silakan periksa kembali tanggal lahir.",
@@ -201,7 +198,7 @@ const I18N = {
   my:{app_title:"ဂျပန်စာ စာမေးပွဲ ဖြေဆိုရန် ဆန္ဒအတည်ပြုခြင်း",l_step1:"သင့်မွေးသက္ကရာဇ်ကို ထည့်ပါ",btn_search:"အမည်ပြရန်",
     l_step2:"သင့်အမည်ကို ရွေးပါ",l_level:"ဖြေဆိုမည့် အဆင့်",l_method:"စာရင်းသွင်းနည်း",
     m_group:"未来クリエイト協同組合（みらいくりえいと/Mirai Create） သို့ အဖွဲ့လိုက် စာရင်းသွင်းရန် အပ်နှံမည်",m_individual:"ကိုယ်တိုင် စာရင်းသွင်းမည်",
-    l_photo:"မျက်နှာဓာတ်ပုံ (ကိုယ်ရေးအတည်ပြု) * မဖြစ်မနေ",photo_pick:"ဓာတ်ပုံ ရွေး / ရိုက်ရန်",photo_ready:"ဓာတ်ပုံ ရွေးပြီးပါပြီ",photo_guide:"မျက်နှာနှင့် ပခုံးကို ဘောင်လမ်းညွှန်နှင့် ကိုက်ညီအောင် ချိန်ပါ",photo_confirm:"ဤဓာတ်ပုံကို အသုံးပြုမည်",photo_retake:"ပြန်ရွေးမည်",
+    l_photo:"မျက်နှာဓာတ်ပုံ (ကိုယ်ရေးအတည်ပြု) * မဖြစ်မနေ",photo_pick:"ဓာတ်ပုံ ရွေး / ရိုက်ရန်",photo_ready:"ဓာတ်ပုံ ရွေးပြီးပါပြီ",photo_guide:"မျက်နှာကို ဘောင်အတွင်း ကိုက်ညီအောင် ချိန်ပါ",photo_confirm:"ဤဓာတ်ပုံကို အသုံးပြုမည်",photo_retake:"ပြန်ရွေးမည်",
     l_notes:"မှတ်ချက် (မဖြစ်မနေ မဟုတ်)",btn_submit:"ဤအချက်များဖြင့် စာရင်းသွင်းမည်",
     d_title:"စာရင်းသွင်းခြင်း လက်ခံပြီးပါပြီ",d_body:'"{name}" ၏ စာရင်းသွင်းခြင်းကို လက်ခံပြီးပါပြီ။ (အဆင့်- {level} / {method})',
     no_match:"ကိုက်ညီသူ မတွေ့ပါ။ မွေးသက္ကရာဇ်ကို ပြန်စစ်ပါ။",
@@ -210,7 +207,7 @@ const I18N = {
   tl:{app_title:"Kumpirmasyon ng Intensyong Kumuha ng Japanese Exam",l_step1:"Pakilagay ang iyong petsa ng kapanganakan",btn_search:"Ipakita ang pangalan",
     l_step2:"Piliin ang iyong pangalan",l_level:"Antas ng eksam",l_method:"Paraan ng pag-apply",
     m_group:"Ipaapply sa 未来クリエイト協同組合（みらいくりえいと/Mirai Create） bilang grupo",m_individual:"Mag-apply nang indibidwal",
-    l_photo:"Larawan ng mukha (pagpapatunay) * kailangan",photo_pick:"Pumili / kumuha ng larawan",photo_ready:"Napili na ang larawan",photo_guide:"Iayon ang mukha at balikat sa gabay ng frame",photo_confirm:"Gamitin ang larawang ito",photo_retake:"Pumili muli",
+    l_photo:"Larawan ng mukha (pagpapatunay) * kailangan",photo_pick:"Pumili / kumuha ng larawan",photo_ready:"Napili na ang larawan",photo_guide:"Iayon ang mukha sa gabay na frame",photo_confirm:"Gamitin ang larawang ito",photo_retake:"Pumili muli",
     l_notes:"Mga tala / paalala (opsyonal)",btn_submit:"Mag-apply gamit ang mga detalyeng ito",
     d_title:"Natanggap ang aplikasyon",d_body:'Natanggap ang aplikasyon ni "{name}". (Antas: {level} / {method})',
     no_match:"Walang tumugmang tao. Pakisuri muli ang petsa ng kapanganakan.",
@@ -219,7 +216,7 @@ const I18N = {
   km:{app_title:"ការបញ្ជាក់បំណងប្រឡងភាសាជប៉ុន",l_step1:"សូមបញ្ចូលថ្ងៃខែឆ្នាំកំណើតរបស់អ្នក",btn_search:"បង្ហាញឈ្មោះ",
     l_step2:"សូមជ្រើសរើសឈ្មោះរបស់អ្នក",l_level:"កម្រិតប្រឡង",l_method:"វិធីចុះឈ្មោះ",
     m_group:"ស្នើសុំឱ្យ 未来クリエイト協同組合（みらいくりえいと/Mirai Create） ចុះឈ្មោះជាក្រុម",m_individual:"ចុះឈ្មោះដោយខ្លួនឯង",
-    l_photo:"រូបថតមុខ (ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ) * ចាំបាច់",photo_pick:"ជ្រើស / ថតរូប",photo_ready:"បានជ្រើសរូបភាព",photo_guide:"តម្រឹមមុខ និងស្មា ឲ្យត្រូវនឹងស៊ុមណែនាំ",photo_confirm:"ប្រើរូបនេះ",photo_retake:"ជ្រើសរើសឡើងវិញ",
+    l_photo:"រូបថតមុខ (ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ) * ចាំបាច់",photo_pick:"ជ្រើស / ថតរូប",photo_ready:"បានជ្រើសរូបភាព",photo_guide:"តម្រឹមមុខ ឲ្យត្រូវនឹងស៊ុមណែនាំ",photo_confirm:"ប្រើរូបនេះ",photo_retake:"ជ្រើសរើសឡើងវិញ",
     l_notes:"កំណត់សម្គាល់ (ស្រេចចិត្ត)",btn_submit:"ចុះឈ្មោះជាមួយព័ត៌មាននេះ",
     d_title:"បានទទួលការចុះឈ្មោះ",d_body:'បានទទួលការចុះឈ្មោះរបស់ "{name}"។ (កម្រិត៖ {level} / {method})',
     no_match:"រកមិនឃើញអ្នកដែលត្រូវគ្នាទេ។ សូមពិនិត្យថ្ងៃខែឆ្នាំកំណើតឡើងវិញ។",
@@ -228,7 +225,7 @@ const I18N = {
   ne:{app_title:"जापानी भाषा परीक्षा — सहभागिता पुष्टि",l_step1:"कृपया आफ्नो जन्म मिति हाल्नुहोस्",btn_search:"नाम देखाउनुहोस्",
     l_step2:"कृपया आफ्नो नाम छान्नुहोस्",l_level:"परीक्षा तह",l_method:"आवेदन विधि",
     m_group:"未来クリエイト協同組合（みらいくりえいと/Mirai Create） लाई सामूहिक आवेदन गर्न अनुरोध गर्नुहोस्",m_individual:"व्यक्तिगत रूपमा आवेदन गर्नुहोस्",
-    l_photo:"अनुहारको फोटो (पहिचान पुष्टि) * अनिवार्य",photo_pick:"फोटो छान्नुहोस् / खिच्नुहोस्",photo_ready:"फोटो छानियो",photo_guide:"अनुहार र काँधलाई फ्रेमको मार्गनिर्देशनमा मिलाउनुहोस्",photo_confirm:"यही फोटो प्रयोग गर्नुहोस्",photo_retake:"फेरि छान्नुहोस्",
+    l_photo:"अनुहारको फोटो (पहिचान पुष्टि) * अनिवार्य",photo_pick:"फोटो छान्नुहोस् / खिच्नुहोस्",photo_ready:"फोटो छानियो",photo_guide:"अनुहारलाई फ्रेमको घेरामा मिलाउनुहोस्",photo_confirm:"यही फोटो प्रयोग गर्नुहोस्",photo_retake:"फेरि छान्नुहोस्",
     l_notes:"टिप्पणी / सूचना (वैकल्पिक)",btn_submit:"यही विवरणका साथ आवेदन गर्नुहोस्",
     d_title:"आवेदन प्राप्त भयो",d_body:'"{name}" को आवेदन प्राप्त भयो। (तह: {level} / {method})',
     no_match:"मिल्ने व्यक्ति भेटिएन। कृपया जन्म मिति पुनः जाँच्नुहोस्।",

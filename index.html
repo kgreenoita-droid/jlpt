@@ -26,6 +26,11 @@
   label.lbl{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
   input[type=date],select,textarea{width:100%;padding:12px;font-size:16px;
     border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  .dob{display:flex;align-items:center;gap:8px}
+  .dob input{padding:12px;font-size:18px;text-align:center;border:1px solid var(--line);
+    border-radius:10px;background:#fff;color:var(--ink);width:100%}
+  .dob input#dobY{flex:1.4}.dob input#dobM,.dob input#dobD{flex:1}
+  .dob span{color:var(--sub);font-size:18px}
   textarea{min-height:76px;resize:vertical}
   .btn{width:100%;padding:13px;font-size:16px;font-weight:700;border:none;border-radius:10px;
     background:var(--brand);color:#fff;cursor:pointer;margin-top:12px}
@@ -77,8 +82,14 @@
   <!-- STEP 1: birthday -->
   <div class="card" id="card1">
     <div class="step">STEP 1</div>
-    <label class="lbl" id="l_step1" for="dob">生年月日を入力してください</label>
-    <input type="date" id="dob">
+    <label class="lbl" id="l_step1" for="dobY">生年月日を入力してください</label>
+    <div class="dob">
+      <input type="tel" id="dobY" maxlength="4" placeholder="YYYY" inputmode="numeric" autocomplete="off">
+      <span>/</span>
+      <input type="tel" id="dobM" maxlength="2" placeholder="MM" inputmode="numeric" autocomplete="off">
+      <span>/</span>
+      <input type="tel" id="dobD" maxlength="2" placeholder="DD" inputmode="numeric" autocomplete="off">
+    </div>
     <button class="btn" id="btn_search">名前を表示する</button>
     <div class="msg" id="msg1"></div>
   </div>
@@ -99,6 +110,8 @@
       <option value="N5">N5</option>
       <option value="N4">N4</option>
       <option value="N3">N3</option>
+      <option value="N2">N2</option>
+      <option value="N1">N1</option>
     </select>
 
     <label class="lbl" id="l_method" style="margin-top:16px">申し込み方法</label>
@@ -151,9 +164,10 @@
 
 </div>
 
+<script src="config.js"></script>
 <script>
-/* ===== 設定：GAS ウェブアプリの /exec URL をここに貼る ===== */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx0L7Uy7SLvhD3Ch9IWI9fWMpF4eZtMTpoaKbB-8aYYxbaxxRb1SLudCeUeDwy3w-Z2/exec";
+/* ===== 設定：GAS ウェブアプリの /exec URL は config.js に記載 ===== */
+const GAS_URL = (window.APP_CONFIG && window.APP_CONFIG.GAS_URL) || "";
 
 /* ===== 多言語辞書 ===== */
 const I18N = {
@@ -245,6 +259,21 @@ function applyLang(code){
 }
 applyLang("ja");
 
+/* 生年月日：3欄の自動移動＋組み立て */
+function getDob(){
+  const y=$("dobY").value.replace(/\D/g,''), m=$("dobM").value.replace(/\D/g,''), d=$("dobD").value.replace(/\D/g,'');
+  if(y.length!==4 || !m || !d) return "";
+  return y+"-"+("0"+m).slice(-2)+"-"+("0"+d).slice(-2);
+}
+(function(){
+  const Y=$("dobY"), M=$("dobM"), D=$("dobD");
+  [Y,M,D].forEach(el=>{ el.addEventListener("input",()=>{ el.value=el.value.replace(/\D/g,""); }); });
+  Y.addEventListener("input",()=>{ if(Y.value.length>=4) M.focus(); });
+  M.addEventListener("input",()=>{ if(M.value.length>=2) D.focus(); });
+  M.addEventListener("keydown",e=>{ if(e.key==="Backspace"&&!M.value) Y.focus(); });
+  D.addEventListener("keydown",e=>{ if(e.key==="Backspace"&&!D.value) M.focus(); });
+})();
+
 /* JSONP（検索用・GET） */
 function jsonp(params){
   return new Promise((resolve,reject)=>{
@@ -262,7 +291,7 @@ function jsonp(params){
 
 /* STEP1: 検索 */
 $("btn_search").onclick=async()=>{
-  const dob=$("dob").value;
+  const dob=getDob();
   const m1=$("msg1"); m1.className="msg"; m1.textContent="";
   if(!dob){m1.className="msg err";m1.textContent="—";return;}
   m1.innerHTML='<span class="spin"></span>'+I18N[curLang].searching;
@@ -358,7 +387,7 @@ $("btn_submit").onclick=async()=>{
   const level=$("level").value;
   const method=(document.querySelector('input[name=method]:checked')||{}).value;
   const notes=$("notes").value.trim();
-  const dob=$("dob").value;
+  const dob=getDob();
   if(!selectedId||!level||!method||!photoData){ m3.className="msg err"; m3.textContent=I18N[curLang].need; return; }
   m3.innerHTML='<span class="spin"></span>'+I18N[curLang].sending;
   try{
